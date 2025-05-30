@@ -1,0 +1,292 @@
+@hostname = localhost
+@port = 8080
+@baseUrl = http://{{hostname}}:{{port}}
+
+###
+# @name Reset
+GET {{baseUrl}}/reset HTTP/1.1
+
+###
+# @name HealthCheck
+# @description Check if the service is up and running
+GET {{baseUrl}}/healthz HTTP/1.1
+
+###
+# @name subject1
+POST {{baseUrl}}/subjects HTTP/1.1
+Content-Type: application/json
+
+{
+  "code": "F01",
+  "name": "TCC",
+  "description": "Sabe fazer capítulo 1",
+  "class": "F",
+  "categories": [
+    "F",
+    "TCC"
+  ]
+}
+
+@subject1id = {{subject1.response.body.$.id}}
+
+###
+# @name subject2
+POST {{baseUrl}}/subjects HTTP/1.1
+Content-Type: application/json
+
+{
+  "code": "E01",
+  "name": "TCC",
+  "description": "Sabe fazer 1 capítulo, 1 roteiro simples e 1 sinopse",
+  "class": "E",
+  "categories": [
+    "E",
+    "TCC"
+  ]
+}
+
+@subject2id = {{subject2.response.body.$.id}}
+
+###
+
+GET {{baseUrl}}/subjects HTTP/1.1
+
+###
+
+POST {{baseUrl}}/subjects/{{subject1id}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "code": "F01",
+  "name": "TCC",
+  "description": "Sabe fazer capítulo 1 ou prólogo",
+  "class": "F",
+  "categories": [
+    "F",
+    "TCC",
+    "Prólogo",
+    "Capítulo 1"
+  ]
+}
+
+###
+
+GET {{baseUrl}}/subjects/{{subject1id}} HTTP/1.1
+
+###
+# @name tutor1
+POST {{baseUrl}}/tutors HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "João"
+}
+
+@tutor1id = {{tutor1.response.body.$.id}}
+
+###
+
+# @name tutor2
+POST {{baseUrl}}/tutors HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Ana"
+}
+@tutor2id = {{tutor2.response.body.$.id}}
+
+###
+
+GET {{baseUrl}}/tutors HTTP/1.1
+
+###
+
+POST {{baseUrl}}/tutors/{{tutor1id}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "João da Silva"
+}
+
+###
+
+GET {{baseUrl}}/tutors/{{tutor1id}} HTTP/1.1
+
+###
+# @name student1
+POST {{baseUrl}}/students HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Maria"
+}
+
+@student1id = {{student1.response.body.$.id}}
+
+###
+
+# @name student2
+POST {{baseUrl}}/students HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Pedro"
+}
+@student2id = {{student2.response.body.$.id}}
+
+###
+GET {{baseUrl}}/students HTTP/1.1
+
+###
+POST {{baseUrl}}/students/{{student1id}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Maria da Silva"
+}
+###
+GET {{baseUrl}}/students/{{student1id}} HTTP/1.1
+###
+# @name student1tutor1
+POST {{baseUrl}}/students-tutors HTTP/1.1
+Content-Type: application/json
+
+{
+  "student_id": {{student1id}},
+  "tutor_id": {{tutor1id}}
+}
+
+###
+
+# @name student2tutor2
+POST {{baseUrl}}/students-tutors HTTP/1.1
+Content-Type: application/json
+
+{
+  "student_id": {{student2id}},
+  "tutor_id": {{tutor2id}}
+}
+
+###
+GET {{baseUrl}}/students-tutors HTTP/1.1
+
+###
+
+GET {{baseUrl}}/students-tutors?student_id={{student1id}} HTTP/1.1
+
+###
+
+GET {{baseUrl}}/students-tutors?student_id={{student2id}} HTTP/1.1
+
+###
+
+GET {{baseUrl}}/students-tutors?tutor_id={{tutor1id}} HTTP/1.1
+
+###
+
+GET {{baseUrl}}/students-tutors?tutor_id={{tutor2id}} HTTP/1.1
+
+###
+# @name student1subject1
+POST {{baseUrl}}/students-subjects HTTP/1.1
+Content-Type: application/json
+
+{
+  "student_id": {{student1id}},
+  "subject_id": {{subject1id}}
+}
+###
+# @name student2subject2
+POST {{baseUrl}}/students-subjects HTTP/1.1
+Content-Type: application/json
+
+{
+  "student_id": {{student2id}},
+  "subject_id": {{subject2id}}
+}
+
+###
+
+# @name student1subject2
+POST {{baseUrl}}/students-subjects HTTP/1.1
+Content-Type: application/json
+
+{
+  "student_id": {{student1id}},
+  "subject_id": {{subject2id}}
+}
+
+###
+GET {{baseUrl}}/students-subjects HTTP/1.1
+###
+GET {{baseUrl}}/students-subjects?student_id={{student1id}} HTTP/1.1
+###
+GET {{baseUrl}}/students-subjects?student_id={{student2id}} HTTP/1.1
+###
+GET {{baseUrl}}/students-subjects?subject_id={{subject1id}} HTTP/1.1
+###
+GET {{baseUrl}}/students-subjects?subject_id={{subject2id}} HTTP/1.1
+###
+
+POST {{baseUrl}}/student-discords HTTP/1.1
+Content-Type: application/json
+
+{
+  "student_id": {{student1id}},
+  "discord_id": "123456789012345678"
+}
+
+###
+
+POST {{baseUrl}}/student-discords HTTP/1.1
+Content-Type: application/json
+
+{
+  "student_id": {{student2id}},
+  "discord_id": "987654321098765432"
+}
+
+###
+
+GET {{baseUrl}}/student-discords HTTP/1.1
+
+###
+
+GET {{baseUrl}}/student-discords?discord_id=123456789012345678 HTTP/1.1
+
+###
+
+GET {{baseUrl}}/student-discords/{{student1id}} HTTP/1.1
+
+###
+DELETE {{baseUrl}}/student-discords/{{student1id}} HTTP/1.1
+
+###
+
+POST {{baseUrl}}/tutor-discords HTTP/1.1
+Content-Type: application/json
+
+{
+  "tutor_id": {{tutor1id}},
+  "discord_id": "123456789012345678"
+}
+
+###
+
+POST {{baseUrl}}/tutor-discords HTTP/1.1
+Content-Type: application/json
+
+{
+  "tutor_id": {{tutor2id}},
+  "discord_id": "987654321098765432"
+}
+
+###
+GET {{baseUrl}}/tutor-discords HTTP/1.1
+###
+GET {{baseUrl}}/tutor-discords?discord_id=123456789012345678 HTTP/1.1
+###
+GET {{baseUrl}}/tutor-discords/{{tutor1id}} HTTP/1.1
+###
+DELETE {{baseUrl}}/tutor-discords/{{tutor1id}} HTTP/1.1
+###
