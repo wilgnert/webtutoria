@@ -54,8 +54,10 @@ type Subjectcategory struct {
 }
 
 type Tutor struct {
-	ID   int32  `json:"id"`
-	Name string `json:"name"`
+	ID        int32  `json:"id"`
+	Name      string `json:"name"`
+	ChannelID string `json:"channel_id"`
+	RoleID    string `json:"role_id"`
 }
 
 type Tutordiscord struct {

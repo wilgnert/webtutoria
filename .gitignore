@@ -2,3 +2,5 @@
 config.json
 config.prod.json
 config.local.json
+/deploy
+discloud.config

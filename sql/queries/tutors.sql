@@ -1,19 +1,21 @@
 -- name: CreateTutor :execresult
-insert into Tutors (name) value (?);
+insert into Tutors (name, role_id, channel_id) value (?, ?, ?);
 
 -- name: GetTutorByID :one
-select id, name from Tutors
+select * from Tutors
 where id = ?;
 
 -- name: GetAllTutors :many
-select id, name from Tutors;
+select * from Tutors;
 
 -- name: GetAllTutorsWithNameLike :many
-select id, name from Tutors
+select * from Tutors
 where name like ?;
 
 -- name: UpdateTutor :execresult
 update Tutors
-set name = ?
+set name = ?,
+    role_id = ?,
+    channel_id = ?
 where id = ?;
 

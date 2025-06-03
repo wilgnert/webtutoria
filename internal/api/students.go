@@ -78,7 +78,7 @@ func (c *Config) StudentsByIdHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		c.getStudentById(w, r, int32(id))
-	case http.MethodPost:
+	case http.MethodPut:
 		c.updateStudentById(w, r, int32(id))
 	default:
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)

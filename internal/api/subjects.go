@@ -145,7 +145,7 @@ func (c *Config) SubjectByIDHandler(w http.ResponseWriter, r * http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		c.getSubjectById(w, r, int32(id))
-	case http.MethodPost:
+	case http.MethodPut:
 		c.updateSubjectById(w, r, int32(id))
 	default:
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)

@@ -11,15 +11,21 @@ import (
 )
 
 const createTutor = `-- name: CreateTutor :execresult
-insert into Tutors (name) value (?)
+insert into Tutors (name, role_id, channel_id) value (?, ?, ?)
 `
 
-func (q *Queries) CreateTutor(ctx context.Context, name string) (sql.Result, error) {
-	return q.db.ExecContext(ctx, createTutor, name)
+type CreateTutorParams struct {
+	Name      string `json:"name"`
+	RoleID    string `json:"role_id"`
+	ChannelID string `json:"channel_id"`
+}
+
+func (q *Queries) CreateTutor(ctx context.Context, arg CreateTutorParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, createTutor, arg.Name, arg.RoleID, arg.ChannelID)
 }
 
 const getAllTutors = `-- name: GetAllTutors :many
-select id, name from Tutors
+select id, name, channel_id, role_id from Tutors
 `
 
 func (q *Queries) GetAllTutors(ctx context.Context) ([]Tutor, error) {
@@ -31,7 +37,12 @@ func (q *Queries) GetAllTutors(ctx context.Context) ([]Tutor, error) {
 	items := []Tutor{}
 	for rows.Next() {
 		var i Tutor
-		if err := rows.Scan(&i.ID, &i.Name); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.ChannelID,
+			&i.RoleID,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -46,7 +57,7 @@ func (q *Queries) GetAllTutors(ctx context.Context) ([]Tutor, error) {
 }
 
 const getAllTutorsWithNameLike = `-- name: GetAllTutorsWithNameLike :many
-select id, name from Tutors
+select id, name, channel_id, role_id from Tutors
 where name like ?
 `
 
@@ -59,7 +70,12 @@ func (q *Queries) GetAllTutorsWithNameLike(ctx context.Context, name string) ([]
 	items := []Tutor{}
 	for rows.Next() {
 		var i Tutor
-		if err := rows.Scan(&i.ID, &i.Name); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.ChannelID,
+			&i.RoleID,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -74,28 +90,42 @@ func (q *Queries) GetAllTutorsWithNameLike(ctx context.Context, name string) ([]
 }
 
 const getTutorByID = `-- name: GetTutorByID :one
-select id, name from Tutors
+select id, name, channel_id, role_id from Tutors
 where id = ?
 `
 
 func (q *Queries) GetTutorByID(ctx context.Context, id int32) (Tutor, error) {
 	row := q.db.QueryRowContext(ctx, getTutorByID, id)
 	var i Tutor
-	err := row.Scan(&i.ID, &i.Name)
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.ChannelID,
+		&i.RoleID,
+	)
 	return i, err
 }
 
 const updateTutor = `-- name: UpdateTutor :execresult
 update Tutors
-set name = ?
+set name = ?,
+    role_id = ?,
+    channel_id = ?
 where id = ?
 `
 
 type UpdateTutorParams struct {
-	Name string `json:"name"`
-	ID   int32  `json:"id"`
+	Name      string `json:"name"`
+	RoleID    string `json:"role_id"`
+	ChannelID string `json:"channel_id"`
+	ID        int32  `json:"id"`
 }
 
 func (q *Queries) UpdateTutor(ctx context.Context, arg UpdateTutorParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, updateTutor, arg.Name, arg.ID)
+	return q.db.ExecContext(ctx, updateTutor,
+		arg.Name,
+		arg.RoleID,
+		arg.ChannelID,
+		arg.ID,
+	)
 }

@@ -43,6 +43,8 @@ func (c *Config) listTutors(w http.ResponseWriter, r *http.Request) {
 func (c *Config) createTutor(w http.ResponseWriter, r *http.Request) {
 	type reqBody struct {
 		Name string `json:"name"`
+		RoleID string `json:"role_id"`
+		ChannelID string `json:"channel_id"`
 	}
 	var newReqBody reqBody
 	defer r.Body.Close()
@@ -50,7 +52,11 @@ func (c *Config) createTutor(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("Error decoding JSON: %v", err), http.StatusBadRequest)
 		return
 	}
-	result, err := c.DB.CreateTutor(r.Context(), newReqBody.Name)
+	result, err := c.DB.CreateTutor(r.Context(), database.CreateTutorParams{
+		Name: newReqBody.Name,
+		RoleID: newReqBody.RoleID,
+		ChannelID: newReqBody.ChannelID,
+	})
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error creating tutor: %v", err), http.StatusInternalServerError)
 		return
@@ -78,7 +84,7 @@ func (c *Config) TutorsByIdHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		c.getTutorById(w, r, int32(id))
-	case http.MethodPost:
+	case http.MethodPut:
 		c.updateTutorById(w, r, int32(id))
 	default:
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
@@ -95,6 +101,8 @@ func (c *Config) getTutorById(w http.ResponseWriter, r *http.Request, id int32) 
 func (c *Config) updateTutorById(w http.ResponseWriter, r *http.Request, id int32) {
 	type reqBody struct {
 		Name string `json:"name"`
+		RoleID string `json:"role_id,omitempty"`
+		ChannelID string `json:"channel_id,omitempty"`
 	}
 	var newReqBody reqBody
 	defer r.Body.Close()
@@ -105,6 +113,8 @@ func (c *Config) updateTutorById(w http.ResponseWriter, r *http.Request, id int3
 	_, err := c.DB.UpdateTutor(r.Context(), database.UpdateTutorParams{
 		ID:   id,
 		Name: newReqBody.Name,
+		RoleID: newReqBody.RoleID,
+		ChannelID: newReqBody.ChannelID,
 	})
 	if err != nil {
 		http.Error(w, "Not found", http.StatusNotFound)
